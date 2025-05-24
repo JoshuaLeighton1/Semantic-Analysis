@@ -68,7 +68,7 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_
 model = LogisticRegression(max_iter=1000)
 model.fit(X_train, y_train)
 
-#EValuate the model
+#Evaluate the model
 
 y_pred = model.predict(X_test)
 #proportion of correct predictions
@@ -105,9 +105,9 @@ def get_tweet_text_from_url(url):
     else:
         raise ValueError(f"Failed to fetch tweet: HTTP {response.status_code}")
 
-# Function to validate tweet URL
+# Function to validate tweet URL updated to accept x.com
 def is_valid_tweet_url(url):
-    pattern = r'^https?://twitter\.com/\w+/status/\d+$'
+    pattern = r'^https?://(twitter|x)\.com/\w+/status/\d+$'
     return bool(re.match(pattern, url))
 
 #Flask app for deployement
