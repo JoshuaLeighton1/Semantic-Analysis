@@ -60,7 +60,7 @@ X = vectorizer.fit_transform(df['cleaned_text'])
 y = df['target']
 
 #Split data into training and test sets 80%, 20%
-X_train, X_test, y_train, y_test = train_test_split(X, y, text_size=0.2, random_state=42)
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
 #Train the model
 
