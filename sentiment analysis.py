@@ -1,5 +1,7 @@
 import pandas as pd
 import re
+import requests
+from bs4 import BeautifulSoup
 import nltk
 from sklearn.model_selection import train_test_split
 from sklearn.feature_extraction.text import TfidfVectorizer
@@ -9,7 +11,6 @@ from nltk.corpus import stopwords
 from nltk.stem import PorterStemmer
 from flask import Flask, request, jsonify
 import pickle
-
 
 
 # Download NLTK stopwords (run once)
@@ -84,4 +85,71 @@ print(f"Precision: {precision:.4f}")
 print(f"Recall: {recall:.4f}")
 print(f"F1-score: {f1:.4f}")
 
+#Save model and vectorizer
+with open('sentiment_model.pkl', 'wb') as f:
+    pickle.dump(model, f)
 
+with open('vectorizer.pkl', 'wb') as f:
+    pickle.dump(vectorizer, f)
+
+# define function to fetch tweet from URL using oEmbed API
+def get_tweet_text_from_url(url):
+    oembed_url = f"https://publish.twitter.com/oembed?url={url}"
+    response = requests.get(oembed_url)
+    if response.status_code == 200:
+        data = response.json()
+        html = data['html']
+        soup = BeautifulSoup(html, 'html.parser')
+        tweet_text = soup.find('p').text
+        return tweet_text
+    else:
+        raise ValueError(f"Failed to fetch tweet: HTTP {response.status_code}")
+
+# Function to validate tweet URL
+def is_valid_tweet_url(url):
+    pattern = r'^https?://twitter\.com/\w+/status/\d+$'
+    return bool(re.match(pattern, url))
+
+#Flask app for deployement
+app = Flask(__name__)
+
+with open('sentiment_model.pkl', 'rb') as f:
+    model = pickle.load(f)
+
+with open('vectorizer.pkl', 'rb') as f:
+    vectorizer = pickle.load(f)
+
+
+#define route for predictions
+
+@app.route('/predict', methods=['POST'])
+def predict():
+    #get json data from reqest
+    data = request.JSON
+    input_text = data['text']
+
+    #Handle URL or plain text input 
+    if input_text.startswith('http'):
+        if not is_valid_tweet_url(input_text):
+            return jsonify({'error': 'Invalid tweet URL'}), 400
+        try:
+            tweet_text = get_tweet_text_from_url(input_text)
+        except Exception as e:
+            return jsonify({'error': str(e)}), 400
+    else:
+        tweet_text = input_text
+
+    #Preprocess and predict
+    cleaned_text = preprocess_text(text)
+    #Convert to TF-IDF features
+    features = vectorizer.transform([cleaned_text])
+    #make a prediction
+    prediction =  model.predict(features)[0]
+    sentiment = 'Positive'  if prediction ==1 else 'Negative'
+    #return as json
+    return jsonify({'sentiment': sentiment})
+
+# Run the flask app
+
+if __name__=="__main__":
+    app.run(debug=True)
