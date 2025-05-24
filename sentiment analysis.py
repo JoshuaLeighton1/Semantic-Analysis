@@ -67,3 +67,21 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, text_size=0.2, random_
 model = LogisticRegression(max_iter=1000)
 model.fit(X_train, y_train)
 
+#EValuate the model
+
+y_pred = model.predict(X_test)
+#proportion of correct predictions
+accuracy = accuracy_score(y_test, y_pred)
+#accuracy of positive predictions 
+precision = precision_score(y_test, y_pred)
+#ability to detect all positives
+recall = recall_score(y_test, y_pred)
+#f1 score
+f1 = f1_score(y_test, y_pred)
+
+print(f"Accuracy: {accuracy:.4f}")
+print(f"Precision: {precision:.4f}")
+print(f"Recall: {recall:.4f}")
+print(f"F1-score: {f1:.4f}")
+
+
