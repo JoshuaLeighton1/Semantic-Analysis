@@ -125,7 +125,7 @@ with open('vectorizer.pkl', 'rb') as f:
 @app.route('/predict', methods=['POST'])
 def predict():
     #get json data from reqest
-    data = request.JSON
+    data = request.json
     input_text = data['text']
 
     #Handle URL or plain text input 
