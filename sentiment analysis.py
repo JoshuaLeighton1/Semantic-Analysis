@@ -58,3 +58,12 @@ vectorizer = TfidfVectorizer(max_features=5000)
 X = vectorizer.fit_transform(df['cleaned_text'])
 #Here y is the label 0 or 1
 y = df['target']
+
+#Split data into training and test sets 80%, 20%
+X_train, X_test, y_train, y_test = train_test_split(X, y, text_size=0.2, random_state=42)
+
+#Train the model
+
+model = LogisticRegression(max_iter=1000)
+model.fit(X_train, y_train)
+
