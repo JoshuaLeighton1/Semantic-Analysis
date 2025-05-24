@@ -50,3 +50,11 @@ def preprocess_text(text):
 #Apply preprocessing
 
 df['cleaned_text'] = df['text'].apply(preprocess_text)
+
+#Extract Feature with TF-IDF]
+
+vectorizer = TfidfVectorizer(max_features=5000)
+#X is the features
+X = vectorizer.fit_transform(df['cleaned_text'])
+#Here y is the label 0 or 1
+y = df['target']
