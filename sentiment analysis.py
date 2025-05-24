@@ -27,4 +27,26 @@ df['target'] = df['target'].map({0:0, 4:1})
 #use a subset of 10 000 samples to ensure efficiency on a standard laptop
 
 df = df.sample(n=10000, random_state=42)
+#Preprocesing the text
 
+def preprocess_text(text):
+    #Remove URLS to elimimate irrelevant links
+    text = re.sub(r'http\S+|www\S+|https\S+', '', text, flags=re.MULTILINE)
+    #remove mentions as they don't contribute to sentiment
+    text = re.sub(r'@\w+', '', text)
+    #Remove special characters and numbers - keep only letters and space
+    text = re.sub(r'[^A-Za-z\s]', '', text)
+    #Convert to lowercase for consistenly
+    text = text.lower()
+    words = text.split()
+    #remove words that add little or not meaning to sentiment
+    stop_words = set(stopwords.words('english'))
+    words = [word for word in words if word not in stop_words]
+    #reduce words to their root verb with stemming
+    stemmer = PorterStemmer()
+    words= [stemmer.stem(word) for word in words]
+    return ' '.join(words)
+
+#Apply preprocessing
+
+df['cleaned_text'] = df['text'].apply(preprocess_text)
