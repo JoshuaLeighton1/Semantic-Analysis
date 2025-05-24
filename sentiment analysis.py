@@ -140,7 +140,7 @@ def predict():
         tweet_text = input_text
 
     #Preprocess and predict
-    cleaned_text = preprocess_text(text)
+    cleaned_text = preprocess_text(tweet_text)
     #Convert to TF-IDF features
     features = vectorizer.transform([cleaned_text])
     #make a prediction
